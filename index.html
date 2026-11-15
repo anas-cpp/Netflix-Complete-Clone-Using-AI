@@ -1,0 +1,2140 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Netflix — Watch TV Shows Online, Watch Movies Online</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            netflix: {
+              bg: '#141414',
+              card: '#181818',
+              red: '#E50914',
+              redHover: '#F40612',
+              gray: '#808080',
+              lightGray: '#B3B3B3',
+            },
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Custom CSS for Scrollbars, Animations, and Netflix Gradients -->
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #141414;
+      color: #ffffff;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      margin: 0;
+    }
+
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Smooth View Transitions */
+    .view-section {
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .view-hidden {
+      display: none !important;
+      opacity: 0;
+    }
+
+    /* Hero Vignette Overlays */
+    .landing-vignette {
+      background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.9) 0%,
+        rgba(0, 0, 0, 0.45) 55%,
+        rgba(0, 0, 0, 0.85) 100%
+      );
+    }
+
+    .hero-bottom-gradient {
+      background: linear-gradient(
+        180deg,
+        rgba(20, 20, 20, 0) 0%,
+        rgba(20, 20, 20, 0.25) 45%,
+        rgba(20, 20, 20, 0.88) 82%,
+        #141414 100%
+      );
+    }
+
+    .hero-left-gradient {
+      background: linear-gradient(
+        77deg,
+        rgba(0, 0, 0, 0.82) 0%,
+        rgba(0, 0, 0, 0.35) 50%,
+        rgba(0, 0, 0, 0) 85%
+      );
+    }
+
+    /* Movie Card Hover Scale & Overlay */
+    .movie-card {
+      transition: transform 0.32s cubic-bezier(0.25, 0.8, 0.25, 1), z-index 0s 0.15s, box-shadow 0.32s ease;
+    }
+    .movie-card:hover {
+      transform: scale(1.12);
+      z-index: 30;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.85);
+      transition: transform 0.32s cubic-bezier(0.25, 0.8, 0.25, 1) 0.12s, z-index 0s, box-shadow 0.32s ease 0.12s;
+    }
+    .movie-card .card-hover-info {
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.25s ease 0.12s, transform 0.25s ease 0.12s;
+    }
+    .movie-card:hover .card-hover-info {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Modal Backdrop Blur & Animation */
+    @keyframes modalPop {
+      0% {
+        opacity: 0;
+        transform: scale(0.93) translateY(18px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+    .animate-modal {
+      animation: modalPop 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Toast Notification */
+    @keyframes slideUpToast {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, 24px);
+      }
+      100% {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+    }
+    .toast-enter {
+      animation: slideUpToast 0.3s ease forwards;
+    }
+  </style>
+</head>
+<body class="bg-[#141414] text-white antialiased selection:bg-[#E50914] selection:text-white">
+
+  <!-- ===================================================================== -->
+  <!-- VIEW 1: LANDING / AUTHENTICATION SCREEN                               -->
+  <!-- ===================================================================== -->
+  <section id="landing-view" class="view-section min-h-screen bg-black text-white">
+    <!-- Hero Container -->
+    <div class="relative min-h-[92vh] w-full flex flex-col justify-between border-b-8 border-[#222222] overflow-hidden">
+      <!-- Background Poster Collage Image -->
+      <img
+        src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1920&q=80"
+        onerror="this.src='https://placehold.co/1920x1080/141414/E50914?text=NETFLIX+CINEMA'"
+        alt="Cinema Backdrop"
+        class="absolute inset-0 w-full h-full object-cover scale-105 filter brightness-75"
+      />
+      <div class="absolute inset-0 landing-vignette"></div>
+
+      <!-- Landing Navbar -->
+      <header class="relative z-20 max-w-7xl w-full mx-auto px-5 sm:px-10 py-6 flex items-center justify-between">
+        <!-- Netflix Brand Wordmark SVG -->
+        <a href="#" onclick="return false;" class="inline-block focus:outline-none" aria-label="Netflix Home">
+          <svg class="h-7 sm:h-10 w-auto fill-[#E50914]" viewBox="0 0 111 30">
+            <path d="M105.06233,14.2806261 L110.999156,30 C109.249227,29.7497422 107.500234,29.4366857 105.718437,29.1554972 L102.374168,20.4686475 L98.9371075,28.4375293 C97.2499766,28.1563408 95.5928391,28.061674 93.9057081,27.8432843 L99.9372012,14.0931671 L94.4680851,-5.68434189e-14 L99.5313525,-5.68434189e-14 L102.593495,7.87421502 L105.874965,-5.68434189e-14 L110.999156,-5.68434189e-14 L105.06233,14.2806261 Z M90.4686475,-5.68434189e-14 L85.8749649,-5.68434189e-14 L85.8749649,27.2499766 C87.3746368,27.3437061 88.9371075,27.4055675 90.4686475,27.5930265 L90.4686475,-5.68434189e-14 Z M81.9055207,26.93692 C77.7186241,26.6557316 73.5307901,26.4064111 69.250164,26.3117443 L69.250164,-5.68434189e-14 L73.9366389,-5.68434189e-14 L73.9366389,21.8745899 C76.6248008,21.9373887 79.3120255,22.1557784 81.9055207,22.2804387 L81.9055207,26.93692 Z M64.2496954,10.6561065 L64.2496954,15.3435186 L57.8442216,15.3435186 L57.8442216,25.9996251 L53.2186709,25.9996251 L53.2186709,-5.68434189e-14 L66.3436123,-5.68434189e-14 L66.3436123,4.68741213 L57.8442216,4.68741213 L57.8442216,10.6561065 L64.2496954,10.6561065 Z M45.3435186,4.68741213 L45.3435186,26.2498828 C43.7810479,26.2498828 42.1876465,26.2498828 40.6561065,26.3117443 L40.6561065,4.68741213 L35.8121661,4.68741213 L35.8121661,-5.68434189e-14 L50.2183897,-5.68434189e-14 L50.2183897,4.68741213 L45.3435186,4.68741213 Z M30.749836,15.5928391 C28.687787,15.5928391 26.2498828,15.5928391 24.4999531,15.6875059 L24.4999531,22.6562939 C27.2499766,22.4678976 30,22.2495079 32.7809542,22.1557784 L32.7809542,26.6557316 L19.812541,27.6876933 L19.812541,-5.68434189e-14 L32.7809542,-5.68434189e-14 L32.7809542,4.68741213 L24.4999531,4.68741213 L24.4999531,10.9991564 C26.3126816,10.9991564 29.0936358,10.9054269 30.749836,10.9054269 L30.749836,15.5928391 Z M4.78114163,12.9684132 L4.78114163,29.3429562 C3.09401069,29.5313525 1.59340144,29.7497422 0,30 L0,-5.68434189e-14 L4.4690224,-5.68434189e-14 L10.562377,17.0315868 L10.562377,-5.68434189e-14 L15.2497891,-5.68434189e-14 L15.2497891,28.061674 C13.5935889,28.3437998 11.906458,28.4375293 10.1246602,28.6868498 L4.78114163,12.9684132 Z" />
+          </svg>
+        </a>
+
+        <div class="flex items-center gap-3 sm:gap-4">
+          <button
+            onclick="quickDemoLogin()"
+            class="hidden sm:inline-flex items-center gap-1.5 text-sm font-medium text-gray-200 hover:text-white bg-white/10 hover:bg-white/20 backdrop-blur-md px-3.5 py-1.5 rounded transition"
+          >
+            <span>Instant Demo</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+          </button>
+          <button
+            onclick="openAuthModal('signin')"
+            class="bg-[#E50914] hover:bg-[#F40612] text-white text-sm font-semibold px-4 py-1.5 sm:px-5 sm:py-2 rounded transition shadow-lg"
+          >
+            Sign In
+          </button>
+        </div>
+      </header>
+
+      <!-- Hero Copy & Email Capture -->
+      <div class="relative z-20 max-w-4xl mx-auto px-5 text-center my-auto py-16">
+        <h1 class="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight leading-tight mb-4">
+          Unlimited movies, TV shows, and more
+        </h1>
+        <p class="text-lg sm:text-2xl font-normal text-gray-100 mb-6">
+          Watch anywhere. Cancel anytime.
+        </p>
+        <p class="text-base sm:text-lg text-gray-200 mb-5 max-w-2xl mx-auto">
+          Ready to watch? Enter your email to create or restart your membership.
+        </p>
+
+        <form id="landing-email-form" class="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-2xl mx-auto">
+          <div class="relative w-full sm:flex-1">
+            <input
+              id="landing-email-input"
+              type="email"
+              required
+              placeholder="Email address"
+              class="w-full h-13 sm:h-14 px-4 rounded bg-black/70 border border-gray-500 text-white placeholder-gray-400 focus:outline-none focus:border-white focus:ring-2 focus:ring-white/40 text-base"
+            />
+          </div>
+          <button
+            type="submit"
+            class="w-full sm:w-auto h-13 sm:h-14 px-7 bg-[#E50914] hover:bg-[#F40612] text-white font-bold text-lg sm:text-xl rounded flex items-center justify-center gap-2 transition shadow-xl shrink-0"
+          >
+            <span>Get Started</span>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </form>
+      </div>
+
+      <div class="h-6"></div>
+    </div>
+
+    <!-- Feature Highlights Strip -->
+    <div class="border-b-8 border-[#222222] py-16 px-6">
+      <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 items-center gap-10">
+        <div class="text-center md:text-left">
+          <h2 class="text-3xl sm:text-5xl font-extrabold mb-4">Enjoy on your TV</h2>
+          <p class="text-lg sm:text-xl text-gray-300">
+            Watch on Smart TVs, Playstation, Xbox, Chromecast, Apple TV, Blu-ray players, and more.
+          </p>
+        </div>
+        <div class="relative rounded-xl overflow-hidden border border-white/10 shadow-2xl">
+          <img
+            src="https://images.unsplash.com/photo-1593784991095-a205069470b6?auto=format&fit=crop&w=1000&q=80"
+            onerror="this.src='https://placehold.co/800x450/181818/FFFFFF?text=4K+Ultra+HD+Streaming'"
+            alt="Watch on TV"
+            class="w-full h-64 sm:h-72 object-cover"
+          />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-5">
+            <span class="text-xs font-semibold uppercase tracking-wider bg-[#E50914] px-2.5 py-1 rounded">4K Ultra HD + Dolby Atmos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ Accordion Section -->
+    <div class="border-b-8 border-[#222222] py-16 px-5 sm:px-8">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-3xl sm:text-5xl font-extrabold text-center mb-10">
+          Frequently Asked Questions
+        </h2>
+        <div id="faq-container" class="space-y-2.5">
+          <!-- FAQ items injected via JS -->
+        </div>
+
+        <div class="mt-10 text-center">
+          <p class="text-base sm:text-lg text-gray-200 mb-4">
+            Ready to start streaming right away? Jump straight into the demo profile!
+          </p>
+          <button
+            onclick="quickDemoLogin()"
+            class="bg-[#E50914] hover:bg-[#F40612] text-white font-bold text-lg px-8 py-3.5 rounded inline-flex items-center gap-2 transition shadow-lg"
+          >
+            <span>Enter Netflix Demo</span>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Landing Footer -->
+    <footer class="max-w-5xl mx-auto px-6 py-12 text-sm text-[#808080]">
+      <p class="mb-6">Questions? Call 1-844-505-2993</p>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+        <a href="#" onclick="return false;" class="hover:underline">FAQ</a>
+        <a href="#" onclick="return false;" class="hover:underline">Help Center</a>
+        <a href="#" onclick="return false;" class="hover:underline">Account</a>
+        <a href="#" onclick="return false;" class="hover:underline">Media Center</a>
+        <a href="#" onclick="return false;" class="hover:underline">Investor Relations</a>
+        <a href="#" onclick="return false;" class="hover:underline">Jobs</a>
+        <a href="#" onclick="return false;" class="hover:underline">Ways to Watch</a>
+        <a href="#" onclick="return false;" class="hover:underline">Terms of Use</a>
+      </div>
+      <p class="text-xs text-gray-500">Netflix Clone UI Demo — Built with HTML5, Tailwind CSS & Vanilla JS</p>
+    </footer>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- SIGN IN / SIGN UP MODAL (OVERLAY ON LANDING)                          -->
+  <!-- ===================================================================== -->
+  <div
+    id="auth-modal"
+    class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+  >
+    <div class="relative w-full max-w-md bg-black/95 border border-white/15 rounded-lg p-8 sm:p-12 shadow-2xl animate-modal">
+      <button
+        onclick="closeAuthModal()"
+        aria-label="Close modal"
+        class="absolute top-4 right-4 text-gray-400 hover:text-white p-2 rounded-full hover:bg-white/10 transition"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <h2 id="auth-modal-title" class="text-3xl font-bold mb-7">Sign In</h2>
+
+      <form id="auth-form" class="space-y-4">
+        <div id="auth-name-group" class="hidden">
+          <input
+            id="auth-name-input"
+            type="text"
+            placeholder="Full Name"
+            class="w-full px-4 py-3.5 rounded bg-[#333333] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/60"
+          />
+        </div>
+        <div>
+          <input
+            id="auth-email-input"
+            type="email"
+            required
+            placeholder="Email or mobile number"
+            class="w-full px-4 py-3.5 rounded bg-[#333333] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/60"
+          />
+        </div>
+        <div>
+          <input
+            id="auth-password-input"
+            type="password"
+            required
+            placeholder="Password"
+            value="••••••••••"
+            class="w-full px-4 py-3.5 rounded bg-[#333333] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/60"
+          />
+        </div>
+
+        <button
+          type="submit"
+          id="auth-submit-btn"
+          class="w-full py-3.5 bg-[#E50914] hover:bg-[#F40612] text-white font-semibold rounded transition mt-2"
+        >
+          Sign In
+        </button>
+
+        <div class="flex items-center justify-between text-xs text-gray-400 pt-1">
+          <label class="inline-flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" checked class="accent-[#E50914] rounded" />
+            <span>Remember me</span>
+          </label>
+          <a href="#" onclick="return false;" class="hover:underline">Need help?</a>
+        </div>
+      </form>
+
+      <div class="mt-8 text-sm text-gray-400">
+        <span id="auth-switch-prompt">New to Netflix?</span>
+        <button
+          id="auth-switch-btn"
+          onclick="toggleAuthMode()"
+          class="text-white font-semibold hover:underline ml-1"
+        >
+          Sign up now.
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- VIEW 2: PROFILE SELECTION SCREEN ("Who's watching?")                  -->
+  <!-- ===================================================================== -->
+  <section id="profiles-view" class="view-section view-hidden min-h-screen bg-[#141414] flex flex-col justify-between">
+    <header class="px-6 sm:px-12 py-6">
+      <svg class="h-7 sm:h-8 w-auto fill-[#E50914]" viewBox="0 0 111 30">
+        <path d="M105.06233,14.2806261 L110.999156,30 C109.249227,29.7497422 107.500234,29.4366857 105.718437,29.1554972 L102.374168,20.4686475 L98.9371075,28.4375293 C97.2499766,28.1563408 95.5928391,28.061674 93.9057081,27.8432843 L99.9372012,14.0931671 L94.4680851,-5.68434189e-14 L99.5313525,-5.68434189e-14 L102.593495,7.87421502 L105.874965,-5.68434189e-14 L110.999156,-5.68434189e-14 L105.06233,14.2806261 Z M90.4686475,-5.68434189e-14 L85.8749649,-5.68434189e-14 L85.8749649,27.2499766 C87.3746368,27.3437061 88.9371075,27.4055675 90.4686475,27.5930265 L90.4686475,-5.68434189e-14 Z M81.9055207,26.93692 C77.7186241,26.6557316 73.5307901,26.4064111 69.250164,26.3117443 L69.250164,-5.68434189e-14 L73.9366389,-5.68434189e-14 L73.9366389,21.8745899 C76.6248008,21.9373887 79.3120255,22.1557784 81.9055207,22.2804387 L81.9055207,26.93692 Z M64.2496954,10.6561065 L64.2496954,15.3435186 L57.8442216,15.3435186 L57.8442216,25.9996251 L53.2186709,25.9996251 L53.2186709,-5.68434189e-14 L66.3436123,-5.68434189e-14 L66.3436123,4.68741213 L57.8442216,4.68741213 L57.8442216,10.6561065 L64.2496954,10.6561065 Z M45.3435186,4.68741213 L45.3435186,26.2498828 C43.7810479,26.2498828 42.1876465,26.2498828 40.6561065,26.3117443 L40.6561065,4.68741213 L35.8121661,4.68741213 L35.8121661,-5.68434189e-14 L50.2183897,-5.68434189e-14 L50.2183897,4.68741213 L45.3435186,4.68741213 Z M30.749836,15.5928391 C28.687787,15.5928391 26.2498828,15.5928391 24.4999531,15.6875059 L24.4999531,22.6562939 C27.2499766,22.4678976 30,22.2495079 32.7809542,22.1557784 L32.7809542,26.6557316 L19.812541,27.6876933 L19.812541,-5.68434189e-14 L32.7809542,-5.68434189e-14 L32.7809542,4.68741213 L24.4999531,4.68741213 L24.4999531,10.9991564 C26.3126816,10.9991564 29.0936358,10.9054269 30.749836,10.9054269 L30.749836,15.5928391 Z M4.78114163,12.9684132 L4.78114163,29.3429562 C3.09401069,29.5313525 1.59340144,29.7497422 0,30 L0,-5.68434189e-14 L4.4690224,-5.68434189e-14 L10.562377,17.0315868 L10.562377,-5.68434189e-14 L15.2497891,-5.68434189e-14 L15.2497891,28.061674 C13.5935889,28.3437998 11.906458,28.4375293 10.1246602,28.6868498 L4.78114163,12.9684132 Z" />
+      </svg>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 text-center my-auto py-8">
+      <h1 class="text-3xl sm:text-5xl font-medium tracking-tight mb-10">Who's watching?</h1>
+
+      <div id="profiles-grid" class="flex flex-wrap items-center justify-center gap-6 sm:gap-10 mb-12">
+        <!-- Rendered dynamically by JS -->
+      </div>
+
+      <button
+        onclick="switchView('landing')"
+        class="border border-gray-500 text-gray-400 hover:text-white hover:border-white px-6 py-2 text-sm sm:text-base tracking-widest uppercase transition"
+      >
+        Sign Out
+      </button>
+    </main>
+
+    <div class="h-10"></div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- VIEW 3: MAIN BROWSE DASHBOARD                                         -->
+  <!-- ===================================================================== -->
+  <section id="browse-view" class="view-section view-hidden min-h-screen bg-[#141414] pb-16">
+    <!-- Sticky Navigation Bar -->
+    <nav
+      id="main-navbar"
+      class="fixed top-0 inset-x-0 z-40 transition-colors duration-300 bg-gradient-to-b from-black/85 to-transparent px-4 sm:px-12 py-3.5"
+    >
+      <div class="max-w-[1600px] mx-auto flex items-center justify-between gap-4">
+        <!-- Left: Logo + Navigation Links -->
+        <div class="flex items-center gap-6 lg:gap-9">
+          <button onclick="setActiveCategory('home')" class="focus:outline-none" aria-label="Netflix Home">
+            <svg class="h-6 sm:h-7 w-auto fill-[#E50914]" viewBox="0 0 111 30">
+              <path d="M105.06233,14.2806261 L110.999156,30 C109.249227,29.7497422 107.500234,29.4366857 105.718437,29.1554972 L102.374168,20.4686475 L98.9371075,28.4375293 C97.2499766,28.1563408 95.5928391,28.061674 93.9057081,27.8432843 L99.9372012,14.0931671 L94.4680851,-5.68434189e-14 L99.5313525,-5.68434189e-14 L102.593495,7.87421502 L105.874965,-5.68434189e-14 L110.999156,-5.68434189e-14 L105.06233,14.2806261 Z M90.4686475,-5.68434189e-14 L85.8749649,-5.68434189e-14 L85.8749649,27.2499766 C87.3746368,27.3437061 88.9371075,27.4055675 90.4686475,27.5930265 L90.4686475,-5.68434189e-14 Z M81.9055207,26.93692 C77.7186241,26.6557316 73.5307901,26.4064111 69.250164,26.3117443 L69.250164,-5.68434189e-14 L73.9366389,-5.68434189e-14 L73.9366389,21.8745899 C76.6248008,21.9373887 79.3120255,22.1557784 81.9055207,22.2804387 L81.9055207,26.93692 Z M64.2496954,10.6561065 L64.2496954,15.3435186 L57.8442216,15.3435186 L57.8442216,25.9996251 L53.2186709,25.9996251 L53.2186709,-5.68434189e-14 L66.3436123,-5.68434189e-14 L66.3436123,4.68741213 L57.8442216,4.68741213 L57.8442216,10.6561065 L64.2496954,10.6561065 Z M45.3435186,4.68741213 L45.3435186,26.2498828 C43.7810479,26.2498828 42.1876465,26.2498828 40.6561065,26.3117443 L40.6561065,4.68741213 L35.8121661,4.68741213 L35.8121661,-5.68434189e-14 L50.2183897,-5.68434189e-14 L50.2183897,4.68741213 L45.3435186,4.68741213 Z M30.749836,15.5928391 C28.687787,15.5928391 26.2498828,15.5928391 24.4999531,15.6875059 L24.4999531,22.6562939 C27.2499766,22.4678976 30,22.2495079 32.7809542,22.1557784 L32.7809542,26.6557316 L19.812541,27.6876933 L19.812541,-5.68434189e-14 L32.7809542,-5.68434189e-14 L32.7809542,4.68741213 L24.4999531,4.68741213 L24.4999531,10.9991564 C26.3126816,10.9991564 29.0936358,10.9054269 30.749836,10.9054269 L30.749836,15.5928391 Z M4.78114163,12.9684132 L4.78114163,29.3429562 C3.09401069,29.5313525 1.59340144,29.7497422 0,30 L0,-5.68434189e-14 L4.4690224,-5.68434189e-14 L10.562377,17.0315868 L10.562377,-5.68434189e-14 L15.2497891,-5.68434189e-14 L15.2497891,28.061674 C13.5935889,28.3437998 11.906458,28.4375293 10.1246602,28.6868498 L4.78114163,12.9684132 Z" />
+            </svg>
+          </button>
+
+          <!-- Desktop Nav Links -->
+          <ul class="hidden md:flex items-center gap-5 text-sm">
+            <li><button data-nav="home" onclick="setActiveCategory('home')" class="nav-tab font-semibold text-white transition">Home</button></li>
+            <li><button data-nav="tv" onclick="setActiveCategory('tv')" class="nav-tab text-gray-300 hover:text-gray-100 transition">TV Shows</button></li>
+            <li><button data-nav="movies" onclick="setActiveCategory('movies')" class="nav-tab text-gray-300 hover:text-gray-100 transition">Movies</button></li>
+            <li><button data-nav="new" onclick="setActiveCategory('new')" class="nav-tab text-gray-300 hover:text-gray-100 transition">New &amp; Popular</button></li>
+            <li>
+              <button data-nav="mylist" onclick="setActiveCategory('mylist')" class="nav-tab text-gray-300 hover:text-gray-100 transition inline-flex items-center gap-1.5">
+                <span>My List</span>
+                <span id="mylist-badge" class="hidden text-[11px] font-bold bg-[#E50914] text-white px-1.5 py-0.2 rounded-full">0</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Right: Search, Notifications, Profile Dropdown -->
+        <div class="flex items-center gap-3 sm:gap-5">
+          <!-- Expandable Search Bar -->
+          <div id="search-wrapper" class="flex items-center bg-black/75 border border-white/25 rounded px-2.5 py-1.5 transition-all duration-300">
+            <button onclick="toggleSearchFocus()" aria-label="Search" class="text-white">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 103.5 10.5a7.5 7.5 0 0013.15 6.15z" />
+              </svg>
+            </button>
+            <input
+              id="search-input"
+              type="text"
+              placeholder="Titles, genres, people"
+              class="bg-transparent text-xs sm:text-sm text-white placeholder-gray-400 focus:outline-none w-28 sm:w-48 md:w-56 ml-2"
+            />
+            <button id="clear-search-btn" onclick="clearSearch()" class="hidden text-gray-400 hover:text-white ml-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+
+          <!-- Notifications Dropdown -->
+          <div class="relative">
+            <button
+              id="notif-btn"
+              onclick="toggleDropdown('notif-menu')"
+              aria-label="Notifications"
+              class="relative p-1.5 text-white hover:text-gray-300 transition"
+            >
+              <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              <span class="absolute top-1 right-1 w-2 h-2 bg-[#E50914] rounded-full"></span>
+            </button>
+
+            <div
+              id="notif-menu"
+              class="hidden absolute right-0 mt-3 w-80 bg-black/95 border border-white/15 rounded shadow-2xl overflow-hidden z-50"
+            >
+              <div class="px-4 py-2.5 border-b border-white/10 text-xs font-semibold uppercase tracking-wider text-gray-400">
+                Notifications
+              </div>
+              <div class="divide-y divide-white/10 max-h-72 overflow-y-auto">
+                <div class="p-3.5 flex gap-3 hover:bg-white/5 cursor-pointer" onclick="openMovieModal('cyber-horizon'); closeAllDropdowns();">
+                  <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=200&q=80" alt="New Arrival" class="w-16 h-10 object-cover rounded" />
+                  <div>
+                    <p class="text-xs text-gray-300 font-medium">New Arrival: Cyber Horizon</p>
+                    <p class="text-[11px] text-gray-500 mt-0.5">Season 2 is now streaming in 4K</p>
+                  </div>
+                </div>
+                <div class="p-3.5 flex gap-3 hover:bg-white/5 cursor-pointer" onclick="openMovieModal('velvet-crown'); closeAllDropdowns();">
+                  <img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=200&q=80" alt="Top 10" class="w-16 h-10 object-cover rounded" />
+                  <div>
+                    <p class="text-xs text-gray-300 font-medium">#1 in TV Shows Today</p>
+                    <p class="text-[11px] text-gray-500 mt-0.5">The Velvet Crown continues its reign</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Profile Switcher Dropdown -->
+          <div class="relative">
+            <button
+              id="profile-dropdown-btn"
+              onclick="toggleDropdown('profile-menu')"
+              class="flex items-center gap-2 focus:outline-none group"
+            >
+              <div id="nav-profile-avatar" class="w-8 h-8 rounded overflow-hidden border border-transparent group-hover:border-white transition">
+                <!-- Populated by JS -->
+              </div>
+              <svg class="w-4 h-4 text-white transition-transform duration-200" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+
+            <div
+              id="profile-menu"
+              class="hidden absolute right-0 mt-3 w-52 bg-black/95 border border-white/15 rounded shadow-2xl py-2 z-50 text-sm"
+            >
+              <div id="dropdown-profiles-list" class="border-b border-white/15 pb-2 mb-2">
+                <!-- Other profiles injected here -->
+              </div>
+              <button
+                onclick="switchView('profiles'); closeAllDropdowns();"
+                class="w-full text-left px-4 py-2 text-gray-300 hover:text-white hover:bg-white/10 transition flex items-center gap-2"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                <span>Manage Profiles</span>
+              </button>
+              <button
+                onclick="setActiveCategory('mylist'); closeAllDropdowns();"
+                class="w-full text-left px-4 py-2 text-gray-300 hover:text-white hover:bg-white/10 transition flex items-center gap-2"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                <span>My List</span>
+              </button>
+              <div class="border-t border-white/15 mt-2 pt-2">
+                <button
+                  onclick="switchView('landing'); closeAllDropdowns();"
+                  class="w-full text-center px-4 py-2 text-gray-300 hover:text-white hover:underline transition text-xs font-medium"
+                >
+                  Sign out of Netflix
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Horizontal Category Bar -->
+      <div class="flex md:hidden items-center gap-2 overflow-x-auto no-scrollbar pt-3 pb-1 text-xs">
+        <button data-nav="home" onclick="setActiveCategory('home')" class="nav-tab px-3 py-1 rounded-full bg-white/15 text-white font-semibold shrink-0">Home</button>
+        <button data-nav="tv" onclick="setActiveCategory('tv')" class="nav-tab px-3 py-1 rounded-full bg-black/50 text-gray-300 shrink-0">TV Shows</button>
+        <button data-nav="movies" onclick="setActiveCategory('movies')" class="nav-tab px-3 py-1 rounded-full bg-black/50 text-gray-300 shrink-0">Movies</button>
+        <button data-nav="new" onclick="setActiveCategory('new')" class="nav-tab px-3 py-1 rounded-full bg-black/50 text-gray-300 shrink-0">New &amp; Popular</button>
+        <button data-nav="mylist" onclick="setActiveCategory('mylist')" class="nav-tab px-3 py-1 rounded-full bg-black/50 text-gray-300 shrink-0">My List</button>
+      </div>
+    </nav>
+
+    <!-- =================================================================== -->
+    <!-- SEARCH RESULTS / CATEGORY GRID OVERLAY (Shown when searching/MyList)-->
+    <!-- =================================================================== -->
+    <div id="filtered-grid-section" class="hidden pt-28 sm:pt-32 px-5 sm:px-12 max-w-[1600px] mx-auto min-h-[75vh]">
+      <div class="flex items-center justify-between mb-6">
+        <h2 id="filtered-grid-title" class="text-2xl sm:text-3xl font-bold text-white">My List</h2>
+        <button
+          onclick="setActiveCategory('home')"
+          class="text-xs sm:text-sm text-gray-400 hover:text-white underline"
+        >
+          Back to Home
+        </button>
+      </div>
+      <div id="filtered-grid-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-5">
+        <!-- Populated dynamically -->
+      </div>
+      <div id="filtered-empty-state" class="hidden text-center py-20 text-gray-400">
+        <p class="text-lg mb-2">No titles found here yet.</p>
+        <p class="text-sm">Click the <span class="text-white font-semibold">+</span> button on any movie or show to save it to your list.</p>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- STANDARD HOME / CATEGORY HERO + CAROUSELS                           -->
+    <!-- =================================================================== -->
+    <div id="standard-browse-content">
+      <!-- Hero Banner -->
+      <header id="hero-banner" class="relative w-full h-[78vh] sm:h-[86vh] min-h-[520px] flex items-center overflow-hidden">
+        <img
+          id="hero-backdrop"
+          src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1920&q=85"
+          onerror="this.src='https://placehold.co/1920x1080/141414/FFFFFF?text=FEATURED+TITLE'"
+          alt="Featured Title"
+          class="absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-500"
+        />
+        <div class="absolute inset-0 hero-left-gradient"></div>
+        <div class="absolute inset-0 hero-bottom-gradient"></div>
+
+        <!-- Hero Content -->
+        <div class="relative z-10 max-w-[1600px] w-full mx-auto px-5 sm:px-12 pt-16">
+          <div class="max-w-xl lg:max-w-2xl">
+            <!-- N Series Badge -->
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-[#E50914] font-black text-xl tracking-tighter">N</span>
+              <span id="hero-badge" class="text-xs font-bold tracking-[0.28em] text-gray-200 uppercase">SERIES</span>
+            </div>
+
+            <h1 id="hero-title" class="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.05] mb-4 drop-shadow-lg">
+              CYBER HORIZON
+            </h1>
+
+            <div class="flex items-center gap-3 text-xs sm:text-sm font-semibold mb-4">
+              <span id="hero-match" class="text-[#46d369]">98% Match</span>
+              <span id="hero-year" class="text-gray-300">2026</span>
+              <span id="hero-rating" class="border border-gray-400 px-1.5 py-0.5 text-xs text-gray-200">TV-MA</span>
+              <span id="hero-duration" class="text-gray-300">2 Seasons</span>
+              <span class="border border-gray-500 rounded px-1.5 py-0.2 text-[10px] text-gray-300">4K</span>
+            </div>
+
+            <p id="hero-synopsis" class="text-sm sm:text-base lg:text-lg text-gray-200 line-clamp-3 mb-6 drop-shadow">
+              In a rain-drenched Neo-Tokyo where memories are traded as currency, a rogue archivist uncovers a conspiracy that threatens to rewrite human consciousness.
+            </p>
+
+            <!-- Hero Action Buttons -->
+            <div class="flex flex-wrap items-center gap-3 sm:gap-4">
+              <button
+                id="hero-play-btn"
+                onclick="playCurrentHero()"
+                class="bg-white hover:bg-white/85 text-black font-bold text-sm sm:text-lg px-6 sm:px-8 py-2.5 sm:py-3 rounded flex items-center gap-2.5 transition shadow-lg"
+              >
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                <span>Play</span>
+              </button>
+
+              <button
+                id="hero-info-btn"
+                onclick="openCurrentHeroModal()"
+                class="bg-[#6d6d6eb3] hover:bg-[#6d6d6e66] text-white font-semibold text-sm sm:text-lg px-6 sm:px-7 py-2.5 sm:py-3 rounded flex items-center gap-2.5 backdrop-blur-sm transition shadow-lg"
+              >
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>More Info</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Movie Carousels Container (Overlaps bottom of hero slightly like real Netflix) -->
+      <main id="carousels-container" class="relative z-20 -mt-14 sm:-mt-24 space-y-8 sm:space-y-11">
+        <!-- Rows rendered dynamically by JavaScript -->
+      </main>
+    </div>
+
+    <!-- Dashboard Footer -->
+    <footer class="max-w-5xl mx-auto px-6 pt-20 pb-8 text-xs text-[#808080]">
+      <div class="flex items-center gap-5 mb-6 text-white">
+        <a href="#" onclick="return false;" aria-label="Facebook" class="hover:text-gray-400">
+          <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
+        </a>
+        <a href="#" onclick="return false;" aria-label="Instagram" class="hover:text-gray-400">
+          <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/></svg>
+        </a>
+        <a href="#" onclick="return false;" aria-label="YouTube" class="hover:text-gray-400">
+          <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 19c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73.47-.13 1.33-.22 2.65-.28 1.3-.07 2.49-.1 3.59-.1L12 5c4.19 0 6.8.16 7.83.44.9.25 1.48.83 1.73 1.73z"/></svg>
+        </a>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        <a href="#" onclick="return false;" class="hover:underline">Audio Description</a>
+        <a href="#" onclick="return false;" class="hover:underline">Help Center</a>
+        <a href="#" onclick="return false;" class="hover:underline">Gift Cards</a>
+        <a href="#" onclick="return false;" class="hover:underline">Media Center</a>
+        <a href="#" onclick="return false;" class="hover:underline">Investor Relations</a>
+        <a href="#" onclick="return false;" class="hover:underline">Jobs</a>
+        <a href="#" onclick="return false;" class="hover:underline">Terms of Use</a>
+        <a href="#" onclick="return false;" class="hover:underline">Privacy</a>
+      </div>
+      <p>© 1997-2026 Netflix, Inc. (Interactive Frontend Showcase)</p>
+    </footer>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- MOVIE / SHOW DETAILS MODAL                                            -->
+  <!-- ===================================================================== -->
+  <div
+    id="movie-modal"
+    class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm overflow-y-auto p-3 sm:p-6 md:p-10"
+  >
+    <div
+      id="movie-modal-card"
+      class="relative max-w-4xl mx-auto bg-[#181818] rounded-xl overflow-hidden shadow-2xl border border-white/10 animate-modal my-4"
+    >
+      <!-- Close Button -->
+      <button
+        onclick="closeMovieModal()"
+        aria-label="Close details"
+        class="absolute top-4 right-4 z-30 w-9 h-9 rounded-full bg-[#181818]/90 hover:bg-white hover:text-black text-white flex items-center justify-center transition shadow-lg"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <!-- Modal Hero Banner -->
+      <div class="relative h-64 sm:h-96 w-full">
+        <img
+          id="modal-backdrop"
+          src=""
+          alt="Backdrop"
+          class="w-full h-full object-cover"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-[#181818] via-[#181818]/30 to-transparent"></div>
+
+        <div class="absolute bottom-6 left-6 right-6 sm:left-10 sm:right-10">
+          <h2 id="modal-title" class="text-2xl sm:text-4xl font-black mb-4 drop-shadow-md">Title</h2>
+          <div class="flex flex-wrap items-center gap-3">
+            <button
+              id="modal-play-btn"
+              class="bg-white hover:bg-white/85 text-black font-bold px-6 py-2 rounded flex items-center gap-2 transition"
+            >
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              <span>Play</span>
+            </button>
+
+            <button
+              id="modal-mylist-btn"
+              class="w-10 h-10 rounded-full border-2 border-gray-400 hover:border-white bg-black/50 text-white flex items-center justify-center transition"
+              title="Add to My List"
+            >
+              <!-- Icon toggled by JS -->
+            </button>
+
+            <button
+              id="modal-like-btn"
+              class="w-10 h-10 rounded-full border-2 border-gray-400 hover:border-white bg-black/50 text-white flex items-center justify-center transition"
+              title="Rate this title"
+            >
+              <!-- Icon toggled by JS -->
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Body Info -->
+      <div class="px-6 sm:px-10 pb-10 pt-2">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div class="md:col-span-2 space-y-3">
+            <div class="flex flex-wrap items-center gap-2.5 text-sm font-semibold">
+              <span id="modal-match" class="text-[#46d369]">98% Match</span>
+              <span id="modal-year" class="text-gray-300">2026</span>
+              <span id="modal-rating" class="border border-gray-500 px-1.5 py-0.2 text-xs text-gray-200">TV-MA</span>
+              <span id="modal-duration" class="text-gray-300">2 Seasons</span>
+              <span class="border border-gray-600 rounded px-1.5 text-[11px] text-gray-300">HD</span>
+            </div>
+            <p id="modal-synopsis" class="text-sm sm:text-base text-gray-200 leading-relaxed">
+              Synopsis goes here.
+            </p>
+          </div>
+
+          <div class="text-xs sm:text-sm space-y-2 text-gray-400">
+            <p><span class="text-gray-500">Cast:</span> <span id="modal-cast" class="text-gray-200"></span></p>
+            <p><span class="text-gray-500">Genres:</span> <span id="modal-genres" class="text-gray-200"></span></p>
+            <p><span class="text-gray-500">This show is:</span> <span id="modal-tags" class="text-gray-200"></span></p>
+          </div>
+        </div>
+
+        <!-- Episodes List (Shown only for TV Shows) -->
+        <div id="modal-episodes-section" class="border-t border-white/15 pt-6 mb-8">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-bold">Episodes</h3>
+            <span id="modal-season-label" class="text-sm font-semibold text-gray-300 bg-[#242424] border border-white/15 px-3 py-1 rounded">Season 1</span>
+          </div>
+          <div id="modal-episodes-list" class="divide-y divide-white/10">
+            <!-- Episodes injected by JS -->
+          </div>
+        </div>
+
+        <!-- More Like This -->
+        <div class="border-t border-white/15 pt-6">
+          <h3 class="text-xl font-bold mb-4">More Like This</h3>
+          <div id="modal-similar-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <!-- Similar cards injected by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- SIMULATED FULLSCREEN VIDEO PLAYER MODAL                               -->
+  <!-- ===================================================================== -->
+  <div id="player-modal" class="fixed inset-0 z-50 hidden bg-black flex flex-col justify-between select-none">
+    <!-- Top Player Bar -->
+    <div class="relative z-20 flex items-center justify-between p-5 sm:p-8 bg-gradient-to-b from-black/90 to-transparent">
+      <button
+        onclick="closePlayerModal()"
+        class="flex items-center gap-2 text-white hover:text-gray-300 transition text-sm sm:text-base font-semibold"
+      >
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        <span>Back to Browse</span>
+      </button>
+      <div class="text-center">
+        <p id="player-title" class="font-bold text-base sm:text-lg">Title</p>
+        <p id="player-subtitle" class="text-xs text-gray-400">S1:E1 "Pilot"</p>
+      </div>
+      <div class="w-24"></div>
+    </div>
+
+    <!-- Simulated Animated Visual Canvas -->
+    <div class="absolute inset-0 overflow-hidden flex items-center justify-center">
+      <img
+        id="player-backdrop"
+        src=""
+        alt="Playback"
+        class="w-full h-full object-cover opacity-65 transition-transform duration-[20000ms] ease-linear scale-110"
+      />
+      <div class="absolute inset-0 bg-radial from-transparent to-black/70"></div>
+
+      <!-- Center Play/Pause Overlay Button -->
+      <button
+        onclick="togglePlayPause()"
+        class="relative z-10 w-20 h-20 rounded-full bg-black/60 hover:bg-[#E50914] border-2 border-white/80 flex items-center justify-center text-white transition transform hover:scale-105"
+      >
+        <svg id="player-center-icon" class="w-9 h-9 fill-current" viewBox="0 0 24 24">
+          <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Bottom Scrubber & Controls -->
+    <div class="relative z-20 p-5 sm:p-8 bg-gradient-to-t from-black/95 via-black/70 to-transparent space-y-3">
+      <!-- Progress Bar -->
+      <div class="flex items-center gap-3">
+        <div
+          id="player-progress-track"
+          onclick="seekPlayer(event)"
+          class="flex-1 h-1.5 bg-gray-600 rounded-full overflow-hidden cursor-pointer group hover:h-2.5 transition-all"
+        >
+          <div id="player-progress-fill" class="h-full bg-[#E50914] w-[18%]"></div>
+        </div>
+        <span id="player-time-remaining" class="text-xs font-mono text-gray-300">42:18</span>
+      </div>
+
+      <div class="flex items-center justify-between text-white">
+        <div class="flex items-center gap-5">
+          <button onclick="togglePlayPause()" class="hover:text-gray-300" aria-label="Play or Pause">
+            <svg id="player-bar-icon" class="w-7 h-7 fill-current" viewBox="0 0 24 24">
+              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+            </svg>
+          </button>
+          <button onclick="skipSeconds(-10)" class="hover:text-gray-300 text-xs font-bold border border-white/40 rounded px-2 py-1">
+            -10s
+          </button>
+          <button onclick="skipSeconds(10)" class="hover:text-gray-300 text-xs font-bold border border-white/40 rounded px-2 py-1">
+            +10s
+          </button>
+        </div>
+
+        <div class="flex items-center gap-4 text-xs sm:text-sm text-gray-300">
+          <span class="bg-white/10 px-2.5 py-1 rounded font-semibold">English [Original] • CC</span>
+          <span class="hidden sm:inline border border-gray-500 px-2 py-0.5 rounded text-xs">1080p HD</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- TOAST NOTIFICATION                                                    -->
+  <!-- ===================================================================== -->
+  <div
+    id="toast-banner"
+    class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden bg-[#222222] border border-white/20 text-white px-5 py-3 rounded-full shadow-2xl text-sm font-medium flex items-center gap-2.5"
+  >
+    <span class="w-2 h-2 rounded-full bg-[#E50914]"></span>
+    <span id="toast-message">Added to My List</span>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- JAVASCRIPT: STATE, MOCK CATALOG, RENDERING & INTERACTIVITY            -->
+  <!-- ===================================================================== -->
+  <script>
+    // =========================================================================
+    // 1. MOCK CATALOG DATA (High-Res Curated Unsplash Stills + Rich Metadata)
+    // =========================================================================
+    const CATALOG = [
+      {
+        id: 'cyber-horizon',
+        title: 'Cyber Horizon',
+        type: 'tv',
+        isOriginal: true,
+        isTrending: true,
+        isNew: true,
+        match: 98,
+        year: 2026,
+        rating: 'TV-MA',
+        duration: '2 Seasons',
+        genres: ['Sci-Fi', 'Cyberpunk', 'Thriller'],
+        tags: 'Gritty, Mind-Bending, Atmospheric',
+        cast: 'Kenji Sato, Elena Vance, Marcus Sterling',
+        synopsis:
+          'In a rain-drenched Neo-Tokyo where human memories are traded on the black market, a rogue archivist uncovers a corporate conspiracy that threatens to overwrite collective consciousness.',
+        backdrop: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1600&q=80',
+        poster: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=700&q=80',
+        progress: 68,
+        episodes: [
+          { num: 1, title: 'Ghost in the Cache', duration: '54m', desc: 'A routine memory extraction goes sideways when Kaito stumbles upon an encrypted executive log.' },
+          { num: 2, title: 'Neon Rain', duration: '49m', desc: 'Pursued by syndicate enforcers, Kaito seeks shelter in the lower-level data slums.' },
+          { num: 3, title: 'Synthetic Dawn', duration: '58m', desc: 'An unlikely alliance forms with an Aether Corp whistleblower holding the master key.' },
+        ],
+      },
+      {
+        id: 'velvet-crown',
+        title: 'The Velvet Crown',
+        type: 'tv',
+        isOriginal: true,
+        isTrending: true,
+        isNew: false,
+        match: 96,
+        year: 2025,
+        rating: 'TV-14',
+        duration: '3 Seasons',
+        genres: ['Drama', 'Period Piece', 'Political'],
+        tags: 'Intimate, Lavish, Suspenseful',
+        cast: 'Clara Beaumont, Julian Thorne, Arthur Pendelton',
+        synopsis:
+          'Behind gilded palace doors in 19th-century Europe, a young monarch must outmaneuver rival ministers, shifting alliances, and scandal to preserve a fragile peace.',
+        backdrop: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1600&q=80',
+        poster: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=700&q=80',
+        progress: 35,
+        episodes: [
+          { num: 1, title: 'Coronation', duration: '61m', desc: 'Following an unexpected abdication, Princess Helena ascends the throne amidst parliamentary unrest.' },
+          { num: 2, title: 'Whispers in the Gallery', duration: '55m', desc: 'Intercepted letters reveal a secret pact between the Chancellor and a foreign envoy.' },
+        ],
+      },
+      {
+        id: 'apex-velocity',
+        title: 'Apex Velocity',
+        type: 'movie',
+        isOriginal: false,
+        isTrending: true,
+        isTopRated: true,
+        isAction: true,
+        match: 95,
+        year: 2025,
+        rating: 'PG-13',
+        duration: '2h 18m',
+        genres: ['Action', 'Motorsport', 'Drama'],
+        tags: 'Adrenaline Rush, Inspiring',
+        cast: 'Liam Mercer, Sofia Rossi, Devon Brooks',
+        synopsis:
+          'A disgraced former formula driver gets one final shot at redemption when an underdog engineering team builds an experimental hybrid prototype for the world championship.',
+        backdrop: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=1600&q=80',
+        poster: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=700&q=80',
+        progress: 82,
+      },
+      {
+        id: 'abyssal-echo',
+        title: 'Abyssal Echo',
+        type: 'movie',
+        isOriginal: true,
+        isTopRated: true,
+        isAction: true,
+        match: 94,
+        year: 2026,
+        rating: 'PG-13',
+        duration: '2h 06m',
+        genres: ['Sci-Fi', 'Adventure', 'Mystery'],
+        tags: 'Tense, Visually Stunning',
+        cast: 'Maya Lin, Henrik Lindqvist, Omar Farooq',
+        synopsis:
+          'Seven miles beneath the Pacific Ocean, a deep-sea research crew discovers a bioluminescent structure emitting rhythmic acoustic signals older than human civilization.',
+        backdrop: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=1600&q=80',
+        poster: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=700&q=80',
+      },
+      {
+        id: 'nordic-silence',
+        title: 'Nordic Silence',
+        type: 'tv',
+        isOriginal: true,
+        isTrending: true,
+        isNew: true,
+        match: 97,
+        year: 2026,
+        rating: 'TV-MA',
+        duration: '1 Season',
+        genres: ['Crime', 'Nordic Noir', 'Mystery'],
+        tags: 'Chilling, Slow-Burn, Cerebral',
+        cast: 'Astrid Solberg, Mads Vestergaard, Freja Holm',
+        synopsis:
+          'During the polar night in northern Svalbard, a detective investigates the disappearance of an entire climate observatory crew—only to find footprints leading into the glacier.',
+        backdrop: 'https://images.unsplash.com/photo-1483347756197-71ef80e95f73?auto=format&fit=crop&w=1600&q=80',
+        poster: 'https://images.unsplash.com/photo-1483347756197-71ef80e95f73?auto=format&fit=crop&w=700&q=80',
+        progress: 45,
+        episodes: [
+          { num: 1, title: 'Whiteout', duration: '52m', desc: 'Detective Astrid arrives at Station Borealis just as the last supply chopper departs before winter.' },
+          { num: 2, title: 'Ice Core', duration: '50m', desc: 'A classified sample recovered from 3,000 meters deep reveals an anomaly.' },
+        ],
+      },
+      {
+        id: 'crimson-samurai',
+        title: 'Blade of the Shogun',
+        type: 'movie',
+        isOriginal: false,
+        isTopRated: true,
+        isAction: true,
+        match: 99,
+        year: 2024,
+        rating: 'R',
+        duration: '2h 29m',
+        genres: ['Action', 'Historical', 'Martial Arts'],
+        tags: 'Epic, Visceral, Poetic',
+        cast: 'Hiroshi Takeda, Yumi Takahashi, Renjiro Sato',
+        synopsis:
+          'In feudal Japan, a masterless swordsman sworn to pacifism must draw his blade one last time to escort a young cartographer across warlord-controlled mountain passes.',
+        backdrop: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=1600&q=80',
+        poster: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=700&q=80',
+      },
+      {
+        id: 'orbital-drift',
+        title: 'Orbital Drift',
+        type: 'movie',
+        isOriginal: true,
+        isTrending: true,
+        isTopRated: true,
+        match: 93,
+        year: 2026,
+        rating: 'PG-13',
+        duration: '2h 12m',
+        genres: ['Sci-Fi', 'Thriller', 'Space'],
+        tags: 'Edge-of-Your-Seat, Emotional',
+        cast: 'Zoe Saldana-style Lead, David Chen, Nora Alvarez',
+        synopsis:
+          'When a solar storm severs communications with Earth, two astronauts aboard a lunar relay station must manually pilot a damaged capsule home using celestial navigation.',
+        backdrop: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=1600&q=80',
+        poster: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=700&q=80',
+      },
+      {
+        id: 'midnight-espresso',
+        title: 'Midnight in Milan',
+        type: 'tv',
+        isOriginal: false,
+        isNew: true,
+        match: 91,
+        year: 2025,
+        rating: 'TV-14',
+        duration: '2 Seasons',
+        genres: ['Romance', 'Drama', 'Culinary'],
+        tags: 'Charming, Heartfelt, Stylish',
+        cast: 'Lorenzo Conti, Camille Laurent, Matteo Ricci',
+        synopsis:
+          'An ambitious pastry chef inherits a struggling historic café in Milan and clashes with the charismatic architect hired to modernize the neighboring piazza.',
+        backdrop: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1600&q=80',
+        poster: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=700&q=80',
+        episodes: [
+          { num: 1, title: 'First Roast', duration: '44m', desc: 'Opening morning brings a surprise inspection and an unexpected architectural blueprint.' },
+          { num: 2, title: 'Tiramisu & Truce', duration: '46m', desc: 'A neighborhood festival forces rivals to share the same kitchen.' },
+        ],
+      },
+      {
+        id: 'desert-mirage',
+        title: 'Dunes of Gold',
+        type: 'movie',
+        isOriginal: false,
+        isAction: true,
+        isTopRated: true,
+        match: 92,
+        year: 2024,
+        rating: 'PG-13',
+        duration: '2h 04m',
+        genres: ['Action', 'Adventure', 'Heist'],
+        tags: 'Fast-Paced, Witty, Globe-Trotting',
+        cast: 'Tariq Al-Mansoor, Sienna Cole, Victor Vance',
+        synopsis:
+          'An art thief and an Interpol historian team up across the Sahara to recover a stolen astronomical astrolabe before a mercenary syndicate auctions it off.',
+        backdrop: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=1600&q=80',
+        poster: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=700&q=80',
+      },
+      {
+        id: 'shadow-protocol',
+        title: 'Shadow Protocol',
+        type: 'tv',
+        isOriginal: true,
+        isAction: true,
+        isTrending: true,
+        match: 95,
+        year: 2026,
+        rating: 'TV-MA',
+        duration: '4 Seasons',
+        genres: ['Action', 'Espionage', 'Thriller'],
+        tags: 'Gritty, Twist-Filled, Intense',
+        cast: 'Gabriel Cross, Nadia Volkov, Simon Vance',
+        synopsis:
+          'When a covert intelligence cipher leaks online, an off-the-books operative has 72 hours across Berlin, Istanbul, and Karachi to extract compromised agents.',
+        backdrop: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=1600&q=80',
+        poster: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=700&q=80',
+        progress: 22,
+        episodes: [
+          { num: 1, title: 'Burn Notice', duration: '57m', desc: 'A routine dead-drop in Vienna turns into an ambush.' },
+          { num: 2, title: 'The Karachi Express', duration: '53m', desc: 'Cross intercepts a courier carrying half of the decryption key.' },
+        ],
+      },
+      {
+        id: 'wild-symphony',
+        title: 'Planet Untamed',
+        type: 'tv',
+        isOriginal: true,
+        isTopRated: true,
+        isNew: true,
+        match: 99,
+        year: 2026,
+        rating: 'TV-G',
+        duration: '1 Season',
+        genres: ['Documentary', 'Nature', '4K Showcase'],
+        tags: 'Breathtaking, Inspiring, Family',
+        cast: 'Narrated by Sir David Attenborough-inspired Voice',
+        synopsis:
+          'Filmed over four years with ultra-low-light cameras, witness never-before-seen nocturnal behaviors of snow leopards, bioluminescent reefs, and desert elephants.',
+        backdrop: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1600&q=80',
+        poster: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=700&q=80',
+        episodes: [
+          { num: 1, title: 'Roof of the World', duration: '50m', desc: 'High in the Karakoram peaks, elusive predators brave sub-zero blizzards.' },
+          { num: 2, title: 'Electric Oceans', duration: '48m', desc: 'When the sun sets, coral reefs erupt in neon fluorescence.' },
+        ],
+      },
+      {
+        id: 'neon-drift',
+        title: 'Tokyo Midnight',
+        type: 'movie',
+        isOriginal: false,
+        isAction: true,
+        isNew: true,
+        match: 90,
+        year: 2025,
+        rating: 'PG-13',
+        duration: '1h 58m',
+        genres: ['Action', 'Street Racing', 'Music'],
+        tags: 'Stylish, High-Energy',
+        cast: 'Ren Sato, Hana Kimura, Leo Vance',
+        synopsis:
+          'Under the expressways of Shibuya, an underground tuner crew enters a high-stakes midnight tournament to save their family garage from corporate developers.',
+        backdrop: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1600&q=80',
+        poster: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=700&q=80',
+      },
+    ];
+
+    // FAQ Data for Landing Screen
+    const FAQ_ITEMS = [
+      {
+        q: 'What is Netflix?',
+        a: 'Netflix is a streaming service that offers a wide variety of award-winning TV shows, movies, anime, documentaries, and more on thousands of internet-connected devices.',
+      },
+      {
+        q: 'How much does Netflix cost?',
+        a: 'Watch Netflix on your smartphone, tablet, Smart TV, laptop, or streaming device, all for one fixed monthly fee. Plans range from $6.99 to $22.99 a month. No extra costs, no contracts.',
+      },
+      {
+        q: 'Where can I watch?',
+        a: 'Watch anywhere, anytime. Sign in with your Netflix account to watch instantly on the web at netflix.com from your personal computer or on any internet-connected device.',
+      },
+      {
+        q: 'How do I cancel?',
+        a: 'Netflix is flexible. There are no pesky contracts and no commitments. You can easily cancel your account online in two clicks. There are no cancellation fees.',
+      },
+      {
+        q: 'Is Netflix good for kids?',
+        a: 'The Netflix Kids experience is included in your membership to give parents control while kids enjoy family-friendly TV shows and movies in their own space.',
+      },
+    ];
+
+    // User Profiles
+    const DEFAULT_PROFILES = [
+      {
+        id: 'user',
+        name: 'User',
+        gradient: 'from-blue-600 to-indigo-800',
+        isKids: false,
+      },
+      {
+        id: 'kids',
+        name: 'Kids',
+        gradient: 'from-amber-400 via-pink-500 to-purple-600',
+        isKids: true,
+      },
+      {
+        id: 'guest',
+        name: 'Guest',
+        gradient: 'from-emerald-500 to-teal-800',
+        isKids: false,
+      },
+    ];
+
+    // =========================================================================
+    // 2. APPLICATION STATE & LOCALSTORAGE PERSISTENCE
+    // =========================================================================
+    const STORAGE_KEY = 'netflix_clone_state_v1';
+
+    let appState = {
+      currentView: 'landing', // 'landing' | 'profiles' | 'browse'
+      activeProfile: DEFAULT_PROFILES[0],
+      profiles: [...DEFAULT_PROFILES],
+      activeCategory: 'home', // 'home' | 'tv' | 'movies' | 'new' | 'mylist'
+      searchQuery: '',
+      myList: ['cyber-horizon', 'apex-velocity', 'wild-symphony'],
+      likedIds: ['cyber-horizon'],
+      heroItemId: 'cyber-horizon',
+      authMode: 'signin', // 'signin' | 'signup'
+      isPlaying: true,
+      playerProgress: 18,
+    };
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          appState.myList = Array.isArray(parsed.myList) ? parsed.myList : appState.myList;
+          appState.likedIds = Array.isArray(parsed.likedIds) ? parsed.likedIds : appState.likedIds;
+          if (parsed.activeProfile) appState.activeProfile = parsed.activeProfile;
+          if (Array.isArray(parsed.profiles) && parsed.profiles.length) appState.profiles = parsed.profiles;
+        }
+      } catch (err) {
+        console.warn('Could not load saved state:', err);
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            myList: appState.myList,
+            likedIds: appState.likedIds,
+            activeProfile: appState.activeProfile,
+            profiles: appState.profiles,
+          })
+        );
+      } catch (err) {
+        console.warn('Could not save state:', err);
+      }
+    }
+
+    // =========================================================================
+    // 3. VIEW NAVIGATION & AUTH FLOW
+    // =========================================================================
+    function switchView(viewName) {
+      appState.currentView = viewName;
+      document.getElementById('landing-view').classList.add('view-hidden');
+      document.getElementById('profiles-view').classList.add('view-hidden');
+      document.getElementById('browse-view').classList.add('view-hidden');
+
+      const target = document.getElementById(`${viewName}-view`);
+      if (target) {
+        target.classList.remove('view-hidden');
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (viewName === 'profiles') {
+        renderProfilesScreen();
+      } else if (viewName === 'browse') {
+        renderBrowseDashboard();
+      }
+    }
+
+    function openAuthModal(mode = 'signin') {
+      appState.authMode = mode;
+      const modal = document.getElementById('auth-modal');
+      const title = document.getElementById('auth-modal-title');
+      const nameGroup = document.getElementById('auth-name-group');
+      const submitBtn = document.getElementById('auth-submit-btn');
+      const prompt = document.getElementById('auth-switch-prompt');
+      const switchBtn = document.getElementById('auth-switch-btn');
+
+      if (mode === 'signup') {
+        title.textContent = 'Create Account';
+        nameGroup.classList.remove('hidden');
+        submitBtn.textContent = 'Start Membership';
+        prompt.textContent = 'Already have an account?';
+        switchBtn.textContent = 'Sign in now.';
+      } else {
+        title.textContent = 'Sign In';
+        nameGroup.classList.add('hidden');
+        submitBtn.textContent = 'Sign In';
+        prompt.textContent = 'New to Netflix?';
+        switchBtn.textContent = 'Sign up now.';
+      }
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeAuthModal() {
+      document.getElementById('auth-modal').classList.add('hidden');
+    }
+
+    function toggleAuthMode() {
+      openAuthModal(appState.authMode === 'signin' ? 'signup' : 'signin');
+    }
+
+    function quickDemoLogin() {
+      switchView('profiles');
+    }
+
+    // =========================================================================
+    // 4. FAQ ACCORDION RENDERER
+    // =========================================================================
+    function renderFAQ() {
+      const container = document.getElementById('faq-container');
+      container.innerHTML = FAQ_ITEMS.map(
+        (item, idx) => `
+        <div class="bg-[#2d2d2d] hover:bg-[#3a3a3a] transition rounded-sm overflow-hidden">
+          <button
+            onclick="toggleFaq(${idx})"
+            class="w-full px-6 py-5 text-left flex items-center justify-between text-lg sm:text-2xl font-medium focus:outline-none"
+          >
+            <span>${item.q}</span>
+            <svg id="faq-icon-${idx}" class="w-6 h-6 sm:w-7 sm:h-7 transition-transform duration-200 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+          <div id="faq-answer-${idx}" class="hidden px-6 pb-6 pt-2 border-t border-black/50 text-base sm:text-xl text-gray-200 leading-relaxed">
+            ${item.a}
+          </div>
+        </div>
+      `
+      ).join('');
+    }
+
+    function toggleFaq(index) {
+      const ans = document.getElementById(`faq-answer-${index}`);
+      const icon = document.getElementById(`faq-icon-${index}`);
+      const isHidden = ans.classList.contains('hidden');
+
+      // Close all others for clean accordion behavior
+      FAQ_ITEMS.forEach((_, i) => {
+        document.getElementById(`faq-answer-${i}`).classList.add('hidden');
+        document.getElementById(`faq-icon-${i}`).classList.remove('rotate-45');
+      });
+
+      if (isHidden) {
+        ans.classList.remove('hidden');
+        icon.classList.add('rotate-45');
+      }
+    }
+
+    // =========================================================================
+    // 5. PROFILE SELECTION SCREEN
+    // =========================================================================
+    function getAvatarSVG(profile) {
+      if (profile.isKids) {
+        return `
+          <div class="w-full h-full bg-gradient-to-br ${profile.gradient} flex items-center justify-center">
+            <span class="font-black text-white tracking-tight text-lg sm:text-2xl drop-shadow">kids</span>
+          </div>
+        `;
+      }
+      return `
+        <div class="w-full h-full bg-gradient-to-br ${profile.gradient} flex flex-col items-center justify-center relative">
+          <!-- Classic Netflix Smiley Eyes & Smile -->
+          <div class="flex items-center gap-4 sm:gap-6 mb-2">
+            <span class="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full bg-white"></span>
+            <span class="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full bg-white"></span>
+          </div>
+          <svg class="w-10 h-5 sm:w-14 sm:h-7 text-white" viewBox="0 0 60 28" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round">
+            <path d="M8 6 C20 22, 42 22, 52 8" />
+          </svg>
+        </div>
+      `;
+    }
+
+    function renderProfilesScreen() {
+      const grid = document.getElementById('profiles-grid');
+      const profileCards = appState.profiles
+        .map(
+          (p) => `
+          <button
+            onclick="selectProfile('${p.id}')"
+            class="group flex flex-col items-center gap-3 focus:outline-none"
+          >
+            <div class="w-24 h-24 sm:w-36 sm:h-36 rounded-md overflow-hidden border-2 border-transparent group-hover:border-white transition-all duration-200 transform group-hover:scale-105 shadow-xl">
+              ${getAvatarSVG(p)}
+            </div>
+            <span class="text-gray-400 group-hover:text-white text-base sm:text-lg font-medium transition">
+              ${p.name}
+            </span>
+          </button>
+        `
+        )
+        .join('');
+
+      const addProfileBtn = `
+        <button
+          onclick="addCustomProfile()"
+          class="group flex flex-col items-center gap-3 focus:outline-none"
+        >
+          <div class="w-24 h-24 sm:w-36 sm:h-36 rounded-md bg-white/5 group-hover:bg-white/15 border-2 border-transparent group-hover:border-white/50 flex items-center justify-center transition-all duration-200">
+            <svg class="w-12 h-12 text-gray-400 group-hover:text-white transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+          <span class="text-gray-400 group-hover:text-white text-base sm:text-lg font-medium transition">
+            Add Profile
+          </span>
+        </button>
+      `;
+
+      grid.innerHTML = profileCards + addProfileBtn;
+    }
+
+    function selectProfile(profileId) {
+      const found = appState.profiles.find((p) => p.id === profileId);
+      if (found) {
+        appState.activeProfile = found;
+        saveState();
+      }
+      appState.activeCategory = 'home';
+      appState.searchQuery = '';
+      document.getElementById('search-input').value = '';
+      switchView('browse');
+      showToast(`Watching as ${appState.activeProfile.name}`);
+    }
+
+    function addCustomProfile() {
+      const gradients = [
+        'from-rose-600 to-red-900',
+        'from-purple-600 to-indigo-900',
+        'from-cyan-500 to-blue-800',
+      ];
+      const nextNum = appState.profiles.length + 1;
+      const newProf = {
+        id: `member-${Date.now()}`,
+        name: `Member ${nextNum}`,
+        gradient: gradients[nextNum % gradients.length],
+        isKids: false,
+      };
+      appState.profiles.push(newProf);
+      saveState();
+      renderProfilesScreen();
+      showToast(`Created profile "${newProf.name}"`);
+    }
+
+    // =========================================================================
+    // 6. BROWSE DASHBOARD, HERO & CAROUSEL RENDERING
+    // =========================================================================
+    function updateNavbarProfileUI() {
+      const avatarEl = document.getElementById('nav-profile-avatar');
+      avatarEl.innerHTML = getAvatarSVG(appState.activeProfile);
+
+      const dropdownList = document.getElementById('dropdown-profiles-list');
+      dropdownList.innerHTML = appState.profiles
+        .map(
+          (p) => `
+          <button
+            onclick="selectProfile('${p.id}'); closeAllDropdowns();"
+            class="w-full px-4 py-2 flex items-center gap-3 hover:bg-white/10 transition text-left ${
+              p.id === appState.activeProfile.id ? 'text-white font-semibold' : 'text-gray-300'
+            }"
+          >
+            <div class="w-7 h-7 rounded overflow-hidden shrink-0">
+              ${getAvatarSVG(p)}
+            </div>
+            <span class="truncate">${p.name}</span>
+          </button>
+        `
+        )
+        .join('');
+
+      // Update My List Badge
+      const badge = document.getElementById('mylist-badge');
+      if (appState.myList.length > 0) {
+        badge.textContent = appState.myList.length;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+
+    function setActiveCategory(cat) {
+      appState.activeCategory = cat;
+      appState.searchQuery = '';
+      document.getElementById('search-input').value = '';
+      document.getElementById('clear-search-btn').classList.add('hidden');
+
+      // Update active styling on nav links
+      document.querySelectorAll('.nav-tab').forEach((btn) => {
+        const isMatch = btn.dataset.nav === cat;
+        if (btn.classList.contains('rounded-full')) {
+          // Mobile pill
+          btn.className = isMatch
+            ? 'nav-tab px-3 py-1 rounded-full bg-white text-black font-semibold shrink-0'
+            : 'nav-tab px-3 py-1 rounded-full bg-black/60 text-gray-300 shrink-0';
+        } else {
+          // Desktop link
+          btn.className = isMatch
+            ? 'nav-tab font-bold text-white transition'
+            : 'nav-tab text-gray-300 hover:text-gray-100 transition';
+        }
+      });
+
+      renderBrowseDashboard();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function getKidsFilteredCatalog() {
+      if (appState.activeProfile?.isKids) {
+        return CATALOG.filter((item) => item.rating === 'TV-G' || item.rating === 'PG-13' || item.rating === 'TV-14');
+      }
+      return CATALOG;
+    }
+
+    function renderBrowseDashboard() {
+      updateNavbarProfileUI();
+
+      const filteredSection = document.getElementById('filtered-grid-section');
+      const standardSection = document.getElementById('standard-browse-content');
+      const baseCatalog = getKidsFilteredCatalog();
+
+      // Mode A: Active Live Search
+      if (appState.searchQuery.trim() !== '') {
+        const q = appState.searchQuery.toLowerCase();
+        const matches = baseCatalog.filter(
+          (m) =>
+            m.title.toLowerCase().includes(q) ||
+            m.genres.some((g) => g.toLowerCase().includes(q)) ||
+            m.cast.toLowerCase().includes(q)
+        );
+        standardSection.classList.add('hidden');
+        filteredSection.classList.remove('hidden');
+        document.getElementById('filtered-grid-title').textContent = `Search results for "${appState.searchQuery}"`;
+        renderGridCards(matches);
+        return;
+      }
+
+      // Mode B: "My List" Tab
+      if (appState.activeCategory === 'mylist') {
+        const savedItems = baseCatalog.filter((m) => appState.myList.includes(m.id));
+        standardSection.classList.add('hidden');
+        filteredSection.classList.remove('hidden');
+        document.getElementById('filtered-grid-title').textContent = `My List (${savedItems.length})`;
+        renderGridCards(savedItems);
+        return;
+      }
+
+      // Mode C: Standard Hero + Horizontal Carousels
+      filteredSection.classList.add('hidden');
+      standardSection.classList.remove('hidden');
+
+      let pool = baseCatalog;
+      if (appState.activeCategory === 'tv') {
+        pool = baseCatalog.filter((m) => m.type === 'tv');
+      } else if (appState.activeCategory === 'movies') {
+        pool = baseCatalog.filter((m) => m.type === 'movie');
+      } else if (appState.activeCategory === 'new') {
+        pool = baseCatalog.filter((m) => m.isNew || m.isTrending);
+      }
+
+      // Set Hero Banner Item
+      const featured = pool[0] || baseCatalog[0];
+      updateHeroBanner(featured);
+
+      // Build 5 Distinct Categories
+      const rows = [
+        {
+          id: 'row-trending',
+          title:
+            appState.activeCategory === 'tv'
+              ? 'Trending TV Shows'
+              : appState.activeCategory === 'movies'
+              ? 'Blockbuster Movies'
+              : 'Trending Now',
+          items: pool.filter((m) => m.isTrending).concat(pool).slice(0, 8),
+        },
+        {
+          id: 'row-originals',
+          title: 'Netflix Originals',
+          items: baseCatalog.filter((m) => m.isOriginal),
+        },
+        {
+          id: 'row-continue',
+          title: `Continue Watching for ${appState.activeProfile.name}`,
+          items: baseCatalog.filter((m) => typeof m.progress === 'number'),
+          showProgress: true,
+        },
+        {
+          id: 'row-toprated',
+          title: 'Top Rated Movies & Specials',
+          items: baseCatalog.filter((m) => m.isTopRated),
+        },
+        {
+          id: 'row-action',
+          title: 'Action & Adventure',
+          items: baseCatalog.filter((m) => m.isAction),
+        },
+      ];
+
+      const carouselsContainer = document.getElementById('carousels-container');
+      carouselsContainer.innerHTML = rows
+        .filter((r) => r.items.length > 0)
+        .map((row) => createCarouselRowHTML(row))
+        .join('');
+    }
+
+    function updateHeroBanner(item) {
+      if (!item) return;
+      appState.heroItemId = item.id;
+      document.getElementById('hero-backdrop').src = item.backdrop;
+      document.getElementById('hero-badge').textContent = item.type === 'tv' ? 'SERIES' : 'FILM';
+      document.getElementById('hero-title').textContent = item.title.toUpperCase();
+      document.getElementById('hero-match').textContent = `${item.match}% Match`;
+      document.getElementById('hero-year').textContent = item.year;
+      document.getElementById('hero-rating').textContent = item.rating;
+      document.getElementById('hero-duration').textContent = item.duration;
+      document.getElementById('hero-synopsis').textContent = item.synopsis;
+    }
+
+    function playCurrentHero() {
+      openPlayerModal(appState.heroItemId);
+    }
+
+    function openCurrentHeroModal() {
+      openMovieModal(appState.heroItemId);
+    }
+
+    function createCarouselRowHTML(row) {
+      const uniqueItems = Array.from(new Map(row.items.map((item) => [item.id, item])).values());
+      return `
+        <div class="relative group/row px-5 sm:px-12 max-w-[1600px] mx-auto">
+          <h2 class="text-base sm:text-xl font-bold text-gray-100 hover:text-white mb-3 inline-flex items-center gap-2 cursor-pointer">
+            <span>${row.title}</span>
+            <span class="text-xs text-[#54b9c5] opacity-0 group-hover/row:opacity-100 transition-opacity font-semibold">Explore All &rsaquo;</span>
+          </h2>
+
+          <div class="relative">
+            <!-- Left Scroll Arrow -->
+            <button
+              onclick="scrollCarousel('${row.id}', -1)"
+              aria-label="Scroll Left"
+              class="hidden sm:flex absolute left-0 top-0 bottom-0 z-30 w-11 bg-black/65 hover:bg-black/85 text-white items-center justify-center rounded-r opacity-0 group-hover/row:opacity-100 transition"
+            >
+              <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+            </button>
+
+            <!-- Scrollable Track -->
+            <div
+              id="${row.id}"
+              class="flex items-stretch gap-2.5 sm:gap-3.5 overflow-x-auto no-scrollbar scroll-smooth py-3"
+            >
+              ${uniqueItems.map((item) => createMovieCardHTML(item, row.showProgress)).join('')}
+            </div>
+
+            <!-- Right Scroll Arrow -->
+            <button
+              onclick="scrollCarousel('${row.id}', 1)"
+              aria-label="Scroll Right"
+              class="hidden sm:flex absolute right-0 top-0 bottom-0 z-30 w-11 bg-black/65 hover:bg-black/85 text-white items-center justify-center rounded-l opacity-0 group-hover/row:opacity-100 transition"
+            >
+              <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function createMovieCardHTML(item, showProgress = false, isGrid = false) {
+      const inList = appState.myList.includes(item.id);
+      const isLiked = appState.likedIds.includes(item.id);
+      const widthClass = isGrid ? 'w-full' : 'w-44 sm:w-60 md:w-64 shrink-0';
+
+      return `
+        <article
+          onclick="openMovieModal('${item.id}')"
+          class="movie-card relative ${widthClass} bg-[#181818] rounded-md overflow-hidden cursor-pointer border border-white/5"
+        >
+          <!-- Thumbnail Container -->
+          <div class="relative aspect-video w-full overflow-hidden bg-zinc-900">
+            <img
+              src="${item.poster}"
+              onerror="this.src='https://placehold.co/600x340/181818/FFFFFF?text=${encodeURIComponent(item.title)}'"
+              alt="${item.title}"
+              loading="lazy"
+              class="w-full h-full object-cover"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-[#181818] via-transparent to-black/20"></div>
+
+            ${
+              item.isOriginal
+                ? `<span class="absolute top-2 left-2 bg-[#E50914] text-white font-black text-[10px] px-1.5 py-0.5 rounded-sm shadow">N</span>`
+                : ''
+            }
+
+            <div class="absolute bottom-2 left-2.5 right-2.5">
+              <h3 class="text-xs sm:text-sm font-bold text-white truncate drop-shadow">${item.title}</h3>
+            </div>
+          </div>
+
+          ${
+            showProgress && item.progress
+              ? `
+              <div class="px-2.5 pt-2 pb-1 bg-[#181818]">
+                <div class="w-full h-1 bg-gray-700 rounded-full overflow-hidden">
+                  <div class="h-full bg-[#E50914]" style="width: ${item.progress}%"></div>
+                </div>
+              </div>
+            `
+              : ''
+          }
+
+          <!-- Quick Action Controls Bar -->
+          <div class="p-2.5 bg-[#181818] flex flex-col justify-between gap-2">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1.5">
+                <!-- Play -->
+                <button
+                  onclick="event.stopPropagation(); openPlayerModal('${item.id}');"
+                  title="Play"
+                  class="w-7 h-7 rounded-full bg-white hover:bg-gray-200 text-black flex items-center justify-center transition"
+                >
+                  <svg class="w-3.5 h-3.5 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+
+                <!-- Add / Remove My List -->
+                <button
+                  onclick="event.stopPropagation(); toggleMyList('${item.id}');"
+                  title="${inList ? 'Remove from My List' : 'Add to My List'}"
+                  class="w-7 h-7 rounded-full border border-gray-400 hover:border-white bg-black/40 text-white flex items-center justify-center transition"
+                >
+                  ${
+                    inList
+                      ? `<svg class="w-3.5 h-3.5 text-[#46d369]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`
+                      : `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>`
+                  }
+                </button>
+
+                <!-- Like Toggle -->
+                <button
+                  onclick="event.stopPropagation(); toggleLike('${item.id}');"
+                  title="Like"
+                  class="w-7 h-7 rounded-full border ${
+                    isLiked ? 'border-white bg-white/15 text-white' : 'border-gray-400 text-gray-300'
+                  } hover:border-white flex items-center justify-center transition"
+                >
+                  <svg class="w-3.5 h-3.5 ${isLiked ? 'fill-current' : ''}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3zM7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3" />
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Expand Details Modal -->
+              <button
+                onclick="event.stopPropagation(); openMovieModal('${item.id}');"
+                title="More Info"
+                class="w-7 h-7 rounded-full border border-gray-400 hover:border-white text-white flex items-center justify-center transition"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+
+            <!-- Metadata Line -->
+            <div class="flex items-center gap-2 text-[11px] font-semibold">
+              <span class="text-[#46d369]">${item.match}% Match</span>
+              <span class="border border-gray-600 px-1 text-gray-300">${item.rating}</span>
+              <span class="text-gray-400 truncate">${item.genres[0]}</span>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderGridCards(items) {
+      const container = document.getElementById('filtered-grid-container');
+      const emptyState = document.getElementById('filtered-empty-state');
+
+      if (!items || items.length === 0) {
+        container.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      container.innerHTML = items.map((item) => createMovieCardHTML(item, false, true)).join('');
+    }
+
+    function scrollCarousel(rowId, direction) {
+      const track = document.getElementById(rowId);
+      if (!track) return;
+      const distance = track.clientWidth * 0.78;
+      track.scrollBy({ left: direction * distance, behavior: 'smooth' });
+    }
+
+    // =========================================================================
+    // 7. MY LIST & LIKE INTERACTIONS (WITH LOCALSTORAGE)
+    // =========================================================================
+    function toggleMyList(itemId) {
+      const item = CATALOG.find((m) => m.id === itemId);
+      if (!item) return;
+
+      const idx = appState.myList.indexOf(itemId);
+      if (idx > -1) {
+        appState.myList.splice(idx, 1);
+        showToast(`Removed "${item.title}" from My List`);
+      } else {
+        appState.myList.push(itemId);
+        showToast(`Added "${item.title}" to My List`);
+      }
+
+      saveState();
+      renderBrowseDashboard();
+
+      // Refresh modal buttons if modal is open for this item
+      const modal = document.getElementById('movie-modal');
+      if (!modal.classList.contains('hidden') && modal.dataset.currentId === itemId) {
+        syncModalActionButtons(itemId);
+      }
+    }
+
+    function toggleLike(itemId) {
+      const item = CATALOG.find((m) => m.id === itemId);
+      if (!item) return;
+
+      const idx = appState.likedIds.indexOf(itemId);
+      if (idx > -1) {
+        appState.likedIds.splice(idx, 1);
+        showToast(`Rating removed for "${item.title}"`);
+      } else {
+        appState.likedIds.push(itemId);
+        showToast(`Rated "${item.title}" — We'll recommend more like this!`);
+      }
+
+      saveState();
+      renderBrowseDashboard();
+
+      const modal = document.getElementById('movie-modal');
+      if (!modal.classList.contains('hidden') && modal.dataset.currentId === itemId) {
+        syncModalActionButtons(itemId);
+      }
+    }
+
+    // =========================================================================
+    // 8. MOVIE DETAILS MODAL
+    // =========================================================================
+    function openMovieModal(itemId) {
+      const item = CATALOG.find((m) => m.id === itemId);
+      if (!item) return;
+
+      const modal = document.getElementById('movie-modal');
+      modal.dataset.currentId = item.id;
+
+      document.getElementById('modal-backdrop').src = item.backdrop;
+      document.getElementById('modal-title').textContent = item.title;
+      document.getElementById('modal-match').textContent = `${item.match}% Match`;
+      document.getElementById('modal-year').textContent = item.year;
+      document.getElementById('modal-rating').textContent = item.rating;
+      document.getElementById('modal-duration').textContent = item.duration;
+      document.getElementById('modal-synopsis').textContent = item.synopsis;
+      document.getElementById('modal-cast').textContent = item.cast;
+      document.getElementById('modal-genres').textContent = item.genres.join(', ');
+      document.getElementById('modal-tags').textContent = item.tags;
+
+      document.getElementById('modal-play-btn').onclick = () => {
+        closeMovieModal();
+        openPlayerModal(item.id);
+      };
+
+      syncModalActionButtons(item.id);
+
+      // Episodes Section (if TV Show)
+      const epSection = document.getElementById('modal-episodes-section');
+      const epList = document.getElementById('modal-episodes-list');
+      if (item.type === 'tv' && Array.isArray(item.episodes)) {
+        epSection.classList.remove('hidden');
+        document.getElementById('modal-season-label').textContent = item.duration;
+        epList.innerHTML = item.episodes
+          .map(
+            (ep) => `
+            <div
+              onclick="closeMovieModal(); openPlayerModal('${item.id}', 'S1:E${ep.num} &quot;${ep.title}&quot;');"
+              class="py-4 px-3 hover:bg-white/5 rounded-lg flex items-center gap-4 cursor-pointer transition group"
+            >
+              <span class="text-xl font-bold text-gray-400 w-6 text-center">${ep.num}</span>
+              <div class="relative w-28 sm:w-36 aspect-video rounded overflow-hidden shrink-0 bg-zinc-800">
+                <img src="${item.poster}" alt="${ep.title}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100" />
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div class="w-8 h-8 rounded-full bg-black/70 border border-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                    <svg class="w-4 h-4 fill-white ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between gap-2 mb-1">
+                  <h4 class="font-semibold text-sm sm:text-base text-white truncate">${ep.title}</h4>
+                  <span class="text-xs text-gray-400 shrink-0">${ep.duration}</span>
+                </div>
+                <p class="text-xs sm:text-sm text-gray-400 line-clamp-2">${ep.desc}</p>
+              </div>
+            </div>
+          `
+          )
+          .join('');
+      } else {
+        epSection.classList.add('hidden');
+      }
+
+      // Similar Titles Grid
+      const similar = CATALOG.filter((m) => m.id !== item.id && m.genres.some((g) => item.genres.includes(g))).slice(0, 3);
+      document.getElementById('modal-similar-grid').innerHTML = similar
+        .map(
+          (sim) => `
+          <div
+            onclick="openMovieModal('${sim.id}')"
+            class="bg-[#242424] hover:bg-[#2f2f2f] rounded-lg overflow-hidden cursor-pointer transition border border-white/5"
+          >
+            <div class="relative aspect-video">
+              <img src="${sim.poster}" alt="${sim.title}" class="w-full h-full object-cover" />
+              <span class="absolute top-2 right-2 bg-black/75 text-[11px] px-1.5 py-0.5 rounded text-gray-200">${sim.duration}</span>
+            </div>
+            <div class="p-3">
+              <div class="flex items-center justify-between text-xs font-semibold mb-1.5">
+                <span class="text-[#46d369]">${sim.match}% Match</span>
+                <span class="border border-gray-500 px-1 text-gray-300">${sim.rating}</span>
+              </div>
+              <h4 class="font-bold text-sm text-white mb-1">${sim.title}</h4>
+              <p class="text-xs text-gray-400 line-clamp-2">${sim.synopsis}</p>
+            </div>
+          </div>
+        `
+        )
+        .join('');
+
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function syncModalActionButtons(itemId) {
+      const inList = appState.myList.includes(itemId);
+      const isLiked = appState.likedIds.includes(itemId);
+
+      const listBtn = document.getElementById('modal-mylist-btn');
+      listBtn.onclick = () => toggleMyList(itemId);
+      listBtn.innerHTML = inList
+        ? `<svg class="w-5 h-5 text-[#46d369]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`
+        : `<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>`;
+
+      const likeBtn = document.getElementById('modal-like-btn');
+      likeBtn.onclick = () => toggleLike(itemId);
+      likeBtn.innerHTML = `<svg class="w-5 h-5 ${isLiked ? 'fill-current text-white' : ''}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3zM7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3"/></svg>`;
+    }
+
+    function closeMovieModal() {
+      document.getElementById('movie-modal').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    // =========================================================================
+    // 9. SIMULATED FULLSCREEN VIDEO PLAYER
+    // =========================================================================
+    let playerTimer = null;
+
+    function openPlayerModal(itemId, customSubtitle = null) {
+      const item = CATALOG.find((m) => m.id === itemId) || CATALOG[0];
+      const player = document.getElementById('player-modal');
+
+      document.getElementById('player-title').textContent = item.title;
+      document.getElementById('player-subtitle').textContent =
+        customSubtitle || (item.type === 'tv' ? 'S1:E1 "Pilot"' : `${item.year} • ${item.duration}`);
+      document.getElementById('player-backdrop').src = item.backdrop;
+
+      appState.isPlaying = true;
+      appState.playerProgress = item.progress || 15;
+      updatePlayerUI();
+
+      player.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+
+      clearInterval(playerTimer);
+      playerTimer = setInterval(() => {
+        if (appState.isPlaying && appState.playerProgress < 100) {
+          appState.playerProgress = Math.min(100, appState.playerProgress + 0.35);
+          updatePlayerUI();
+        }
+      }, 500);
+    }
+
+    function closePlayerModal() {
+      clearInterval(playerTimer);
+      document.getElementById('player-modal').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    function togglePlayPause() {
+      appState.isPlaying = !appState.isPlaying;
+      updatePlayerUI();
+    }
+
+    function skipSeconds(delta) {
+      appState.playerProgress = Math.max(0, Math.min(100, appState.playerProgress + (delta > 0 ? 5 : -5)));
+      updatePlayerUI();
+    }
+
+    function seekPlayer(event) {
+      const track = document.getElementById('player-progress-track');
+      const rect = track.getBoundingClientRect();
+      const ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+      appState.playerProgress = Math.round(ratio * 100);
+      updatePlayerUI();
+    }
+
+    function updatePlayerUI() {
+      document.getElementById('player-progress-fill').style.width = `${appState.playerProgress}%`;
+      const pausePath = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />';
+      const playPath = '<path d="M8 5v14l11-7z" />';
+      const iconHTML = appState.isPlaying ? pausePath : playPath;
+      document.getElementById('player-center-icon').innerHTML = iconHTML;
+      document.getElementById('player-bar-icon').innerHTML = iconHTML;
+
+      const totalSeconds = 54 * 60;
+      const remaining = Math.max(0, Math.round(totalSeconds * (1 - appState.playerProgress / 100)));
+      const mins = String(Math.floor(remaining / 60)).padStart(2, '0');
+      const secs = String(remaining % 60).padStart(2, '0');
+      document.getElementById('player-time-remaining').textContent = `${mins}:${secs}`;
+    }
+
+    // =========================================================================
+    // 10. DROPDOWNS, SEARCH, SCROLL & TOAST HELPERS
+    // =========================================================================
+    function toggleDropdown(menuId) {
+      const menu = document.getElementById(menuId);
+      const isHidden = menu.classList.contains('hidden');
+      closeAllDropdowns();
+      if (isHidden) {
+        menu.classList.remove('hidden');
+      }
+    }
+
+    function closeAllDropdowns() {
+      document.getElementById('notif-menu').classList.add('hidden');
+      document.getElementById('profile-menu').classList.add('hidden');
+    }
+
+    function toggleSearchFocus() {
+      document.getElementById('search-input').focus();
+    }
+
+    function clearSearch() {
+      appState.searchQuery = '';
+      document.getElementById('search-input').value = '';
+      document.getElementById('clear-search-btn').classList.add('hidden');
+      renderBrowseDashboard();
+    }
+
+    let toastTimeout = null;
+    function showToast(message) {
+      const toast = document.getElementById('toast-banner');
+      document.getElementById('toast-message').textContent = message;
+      toast.classList.remove('hidden', 'toast-enter');
+      void toast.offsetWidth; // trigger reflow
+      toast.classList.add('toast-enter');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 2800);
+    }
+
+    // =========================================================================
+    // 11. EVENT LISTENERS & INITIALIZATION
+    // =========================================================================
+    document.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      renderFAQ();
+
+      // Landing email capture -> opens Sign Up modal pre-filled
+      document.getElementById('landing-email-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const emailVal = document.getElementById('landing-email-input').value.trim();
+        document.getElementById('auth-email-input').value = emailVal;
+        openAuthModal('signup');
+      });
+
+      // Mock Auth Form Submit -> transitions to Profile Selection
+      document.getElementById('auth-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const customName = document.getElementById('auth-name-input').value.trim();
+        if (appState.authMode === 'signup' && customName) {
+          appState.profiles[0].name = customName;
+          appState.activeProfile = appState.profiles[0];
+          saveState();
+        }
+        closeAuthModal();
+        switchView('profiles');
+      });
+
+      // Live Search Input Filter
+      const searchInput = document.getElementById('search-input');
+      const clearSearchBtn = document.getElementById('clear-search-btn');
+      searchInput.addEventListener('input', (e) => {
+        appState.searchQuery = e.target.value;
+        if (appState.searchQuery.length > 0) {
+          clearSearchBtn.classList.remove('hidden');
+        } else {
+          clearSearchBtn.classList.add('hidden');
+        }
+        renderBrowseDashboard();
+      });
+
+      // Sticky Navbar Background Transition on Scroll
+      window.addEventListener('scroll', () => {
+        const navbar = document.getElementById('main-navbar');
+        if (!navbar) return;
+        if (window.scrollY > 40) {
+          navbar.classList.add('bg-[#141414]', 'shadow-lg');
+          navbar.classList.remove('bg-gradient-to-b', 'from-black/85', 'to-transparent');
+        } else {
+          navbar.classList.remove('bg-[#141414]', 'shadow-lg');
+          navbar.classList.add('bg-gradient-to-b', 'from-black/85', 'to-transparent');
+        }
+      });
+
+      // Close dropdowns & modals on outside click or Escape key
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('#notif-btn') && !e.target.closest('#notif-menu')) {
+          document.getElementById('notif-menu').classList.add('hidden');
+        }
+        if (!e.target.closest('#profile-dropdown-btn') && !e.target.closest('#profile-menu')) {
+          document.getElementById('profile-menu').classList.add('hidden');
+        }
+        if (e.target.id === 'movie-modal') {
+          closeMovieModal();
+        }
+        if (e.target.id === 'auth-modal') {
+          closeAuthModal();
+        }
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeMovieModal();
+          closeAuthModal();
+          closePlayerModal();
+          closeAllDropdowns();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
